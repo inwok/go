@@ -268,9 +268,11 @@ enum MLX90614_TEMPERATURE_ORIGIN {
     AMBIENT = 0x06,
 }
 //----------------------------------
-//% color=#E7734B icon="\uf2db"
+
+
+//% color=#E7734B icon="\uf48b"
 //% groups="['Motor','Servo','Led', 'Read Sensor','MLX90614 IR thermometer','Logic Sensor','I2C LCD 1602']"
-namespace InwO {
+namespace Motor {
 
         //สำหรับ motor
 
@@ -336,8 +338,8 @@ namespace InwO {
 
     }
 }
-//% weight=5 color=#2699BF icon="\uf110"
-namespace LED {
+//% weight=5 color=#E7734B icon="\uf110"
+namespace GigoLED {
 //% color=#FACB09
     //สำหรับ Led
     //% block="LED $leds Status $Status"
@@ -383,7 +385,7 @@ namespace LED {
         }
     }
 }
-//% color=#76dbb1 icon="\uf2ce"
+//% color=#E7734B icon="\uf2db"
 namespace Sensor {
     //MLX90614_TEMPERATURE
     let MLX90614_I2C_ADDR = 0x5A
@@ -502,8 +504,9 @@ namespace Sensor {
     }
 }
 
-//% color=#27b0ba icon="\uf26c"
-namespace LCD {
+
+//% color=#E7734B icon="\uf26c"
+namespace LCD1602 {
     //LCD i2c
     
     
@@ -677,4 +680,8 @@ namespace LCD {
 
 }
 
+
+
+
+//-----------------------------------
 
