@@ -294,12 +294,78 @@ namespace Command {
 //% color=#E7734B icon="\uf2db"
 namespace Sensor {
 
-    function signal_dht11(pin: DigitalPin): void {
+    //% color=#000000
+    //% block="Read button $pin (0-1)"
+    //% group="Read Sensor"
+    export function Readbutton(pin: buttonChannel): number {
+        let read = buttonChannels[pin];
+        pins.setPull(buttonChannels[pin], PinPullMode.PullUp);
+        let reading = pins.digitalReadPin(read);
+        return (reading);
+    }
+    //% color=#000000    
+    //สำหรับ sensor
+    //% block="Analog Sensor $pin (0-10) "
+    //% group="Read Sensor"
+    export function lightSensor(pin: sensorChannel): number {
+        let read = servoconChannels[pin];
+        let reading = pins.analogReadPin(read);
+        let mappin = pins.map(reading, 0, 1023, 0, 10); // แปลงค่าจาก 0-1023 เป็น 0-10
+        return Math.round(mappin);
+    }
+
+    //% color=#000000    
+    //สำหรับ sensor
+    //% block="Digital Sensor $pin (0-1)"
+    //% group="Read Sensor"
+    export function Sensor(pin: sensorChannel): number {
+        let read = sensorChannels[pin];
+        let reading = pins.digitalReadPin(read);
+        return (reading);
+    }
+
+
+        function signal_dht11(pin: DigitalPin): void {
         pins.digitalWritePin(pin, 0);
         basic.pause(18);
         let i = pins.digitalReadPin(pin);
         pins.setPull(pin, PinPullMode.PullUp);
     }
+
+    
+    //% color=#383838
+    //สำหรับ Track Line
+    //% block="Track Line $pin Black Color"
+    //% group="Logic Sensor"
+    export function isblack(pin: blackChannel): boolean {
+        let read = blackChannels[pin];
+        return pins.digitalReadPin(read) == 1;
+    }
+    //% color=#636262
+    //สำหรับ Track Line
+    //% block="Track Line $pin Not Black"
+    //% group="Logic Sensor"
+    export function notblack(pin: blackChannel): boolean {
+        let read = blackChannels[pin];
+        return pins.digitalReadPin(read) == 0;
+    }
+   
+
+    //% color=#3D3430    
+    //สำหรับ buttonpress
+    //% block="On button $pin pressed"
+    //% group="Logic Sensor"
+    export function isButtonPressed(pin: buttonChannel): boolean {
+        pins.setPull(buttonChannels[pin], PinPullMode.PullUp);
+        let read = buttonChannels[pin];
+        return pins.digitalReadPin(read) == 0;
+    }
+
+
+   
+
+
+    
 
     function dht11_read(pin: DigitalPin): number {
         signal_dht11(pin);
@@ -373,7 +439,7 @@ namespace Sensor {
     //% color=#76dbb1
     //sonar
     //% block="sonar %channel unit %unit"
-    //% group="Read Sensor"
+    //% group="ect"
     //% unit.defl=PingUnit.Centimeters
     export function ping(channel: sonarPort, unit: PingUnit, maxCmDistance = 500): number {
         let trig = trigChanel[channel];
@@ -404,7 +470,7 @@ namespace Sensor {
         MicroSeconds
     }
     //% color=#76dbb1
-    //% group="Read Sensor"
+    //% group="ect"
     //% blockId=sensor_ping block="ultrasonic trig %trig|echo %echo|get distance %unit"
     //% trig.fieldEditor="gridpicker" trig.fieldOptions.columns=4
     //% trig.fieldOptions.tooltips="false" trig.fieldOptions.width="300"
@@ -428,40 +494,12 @@ namespace Sensor {
             default: return d;
         }
     }
-
-    //% color=#383838
-    //สำหรับ Track Line
-    //% block="Track Line $pin Black Color"
-    //% group="Logic Sensor"
-    export function isblack(pin: blackChannel): boolean {
-        let read = blackChannels[pin];
-        return pins.digitalReadPin(read) == 1;
-    }
-    //% color=#636262
-    //สำหรับ Track Line
-    //% block="Track Line $pin Not Black"
-    //% group="Logic Sensor"
-    export function notblack(pin: blackChannel): boolean {
-        let read = blackChannels[pin];
-        return pins.digitalReadPin(read) == 0;
-    }
-   
-
-    //% color=#3D3430    
-    //สำหรับ buttonpress
-    //% block="On button $pin pressed"
-    //% group="Logic Sensor"
-    export function isButtonPressed(pin: buttonChannel): boolean {
-        pins.setPull(buttonChannels[pin], PinPullMode.PullUp);
-        let read = buttonChannels[pin];
-        return pins.digitalReadPin(read) == 0;
-    }
-
-
+    //% group="ect"
     //สำหรับ motion PIR3pin
     //% color=#76dbb1
     //% blockId=octopus_pir weight=80 blockGap=30
-    //% block="motion detector at pin %p"    //% group="Logic Sensor"
+    //% block="motion detector at pin %p"    
+    
     export function PIR(p: sensorChannel): boolean {
         let b = sensorChannels[p];
         let a: number = pins.digitalReadPin(b);
@@ -470,36 +508,6 @@ namespace Sensor {
         } else return false;
     }
 
-
-    //% color=#000000
-    //% block="Read button $pin (0-1)"
-    //% group="Read Sensor"
-    export function Readbutton(pin: buttonChannel): number {
-        let read = buttonChannels[pin];
-        pins.setPull(buttonChannels[pin], PinPullMode.PullUp);
-        let reading = pins.digitalReadPin(read);
-        return (reading);
-    }
-    //% color=#000000    
-    //สำหรับ sensor
-    //% block="Analog Sensor $pin (0-10) "
-    //% group="Read Sensor"
-    export function lightSensor(pin: sensorChannel): number {
-        let read = servoconChannels[pin];
-        let reading = pins.analogReadPin(read);
-        let mappin = pins.map(reading, 0, 1023, 0, 10); // แปลงค่าจาก 0-1023 เป็น 0-10
-        return Math.round(mappin);
-    }
-
-    //% color=#000000    
-    //สำหรับ sensor
-    //% block="Digital Sensor $pin (0-1)"
-    //% group="Read Sensor"
-    export function Sensor(pin: sensorChannel): number {
-        let read = sensorChannels[pin];
-        let reading = pins.digitalReadPin(read);
-        return (reading);
-    }
 }
 
 
