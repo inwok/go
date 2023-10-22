@@ -11,5 +11,5 @@ Blocks provided by InwO。
 For microbit
 
 ```package
-InwO=github.com/inwok/motor
+InwO=github.com/inwok/go
 ```
