@@ -15,6 +15,7 @@
 	
          
     ],
-    "icon": "icon.png",
+    "icon": "./static/packages/devices/icon.png",
+    "hidden": true,
     "public": true
 }
