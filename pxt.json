@@ -1,6 +1,6 @@
 {
     "name": "InwO",
-    "version": "1.0.1",
+    "version": "1.10.66",
     "description": "Blocks provided by InwO。",
     "license": "MIT",
     "dependencies": {
@@ -11,7 +11,8 @@
         "main.ts",
 	"_locales/zh-cn/sensors-strings.json",
         "_locales/zh-tw/sensors-strings.json",
-        "_locales/el/sensors-strings.json"
+        "_locales/el/sensors-strings.json",
+	"icon.png"
 	
          
     ],
