@@ -270,123 +270,65 @@ enum MLX90614_TEMPERATURE_ORIGIN {
 //----------------------------------
 
 
-//% color=#E7734B icon="\uf48b"
-//% groups="['Motor','Servo','Led', 'Read Sensor','MLX90614 IR thermometer','Logic Sensor','I2C LCD 1602']"
-namespace Motor {
-
-        //สำหรับ motor
-
-    //% color=#E7734B
-    //% direction.defl=MotorShaftDirection.HIGH
-    //% block="Stop Motor $channel"
-    //% group="Motor"
-    export function motorStop(channel: MotorChannel): void {
-        let dirPin = motorChannels[channel];
-        let speedPin = motorSpeedPins[channel];
-
-        pins.digitalWritePin(dirPin, 0);
-        pins.analogWritePin(speedPin, 0);
-    }
-
-    //% color=#E7734B
-    //% block="Motor $channel direction $direction speed $speed"
-    //% speed.min=0 speed.max=255
-    //% direction.min=0 direction.max=1
-    
-    //% group="Motor"
-    //% color=#E7734B
-    export function motorControltest(channel: MotorChannel, direction: number, speed: number): void {
-        let dirPin = motorChannels[channel];
-        let speedPin = motorSpeedPins[channel];
-
-        pins.digitalWritePin(dirPin, direction);
-        pins.analogWritePin(speedPin, pins.map(speed, 0, 255, 0, 1023));
-    }
-
-    //% color=#E7734B
-    //% block="Motor $channel direction $direction speed $speed"
-    //% speed.min=0 speed.max=255
-    //% direction.defl=MotorShaftDirection.HIGH
-    //% group="Motor"
-    //% color=#E7734B
-    export function motorControl(channel: MotorChannel, direction: MotorShaftDirection, speed: number): void {
-        let dirPin = motorChannels[channel];
-        let speedPin = motorSpeedPins[channel];
-
-        pins.digitalWritePin(dirPin, direction);
-        pins.analogWritePin(speedPin, pins.map(speed, 0, 255, 0, 1023));
-    }
-    //% color=#E84E19
-    //สำหรับ servo180
-    //% block"servo180 $pinSmini degrees $degrees"
-    //% degrees.min=20 degrees.max=160
-    //% degrees.defl=90
-    //% group="Servo"
-    export function MiniServo(pinSmini: servoChannel, degrees: number): void {
-        let pinsmini= servoChannels[pinSmini];
-        pins.servoWritePin(pinsmini, degrees);
-
-    }
-    //% color=#E84E19
-    //สำหรับ servocon
-    //% block"ContinuousServo $pinSV direction $direction"
-    //% direction.defl=90
-    //% group="Servo"
-    export function ContinuousServo(pinSV: servoChannel, direction: svconShaft): void {
-        let pinservo = servoChannels[pinSV];
-        pins.servoWritePin(pinservo, direction);
-
-    }
-}
-//% weight=5 color=#E7734B icon="\uf110"
-namespace GigoLED {
-//% color=#FACB09
-    //สำหรับ Led
-    //% block="LED $leds Status $Status"
-    //% Status.min=0 Status.max=1
-    //% leds.defl=LEDChannel.D
-    //% group="Led"
-    export function ledtest(leds: LEDChannel, Status: number): void {
-        let ledg = LEDChannels[leds];
-
-        pins.digitalWritePin(ledg, Status);
-
-    }
-
-    //% color=#FACB09
-    //สำหรับ Led
-    //% block="LED $leds Status $Status"
-    //% Status.defl=LEDShaftonoff.HIGH*
-    //% leds.defl=LEDChannel.D
-    //% group="Led"
-    export function led(leds: LEDChannel, Status: LEDShaftonoff): void {
-        let ledg = LEDChannels[leds];
-
-        pins.digitalWritePin(ledg, Status);
-
-    }
-    //% color=#FACB09
-    //toggle led
-    //% blockId=LED block="LED %pin $ledstate"
-    //% ledstate.shadow="toggleOnOff"
-    //% expandableArgumentMode="toggle"
-    //% pin.defl=LEDChannel.D
-    //% group="Led"
-    export function ledBrightness(pin: LEDChannel, ledstate: boolean): void {
-        if (ledstate) {
-            let pinled = LEDChannels[pin];
-            pins.digitalWritePin(pinled, 1);
-           
-        }
-        else {
-            let pinled = LEDChannels[pin];
-            pins.digitalWritePin(pinled, 0);
-           
-        }
-    }
-}
 //% color=#E7734B icon="\uf2db"
 namespace Sensor {
+
+    function signal_dht11(pin: DigitalPin): void {
+        pins.digitalWritePin(pin, 0);
+        basic.pause(18);
+        let i = pins.digitalReadPin(pin);
+        pins.setPull(pin, PinPullMode.PullUp);
+    }
+
+    function dht11_read(pin: DigitalPin): number {
+        signal_dht11(pin);
+
+        // Wait for response header to finish
+        while (pins.digitalReadPin(pin) == 1);
+        while (pins.digitalReadPin(pin) == 0);
+        while (pins.digitalReadPin(pin) == 1);
+
+        let value = 0;
+        let counter = 0;
+
+        for (let i = 0; i <= 32 - 1; i++) {
+            while (pins.digitalReadPin(pin) == 0);
+            counter = 0
+            while (pins.digitalReadPin(pin) == 1) {
+                counter += 1;
+            }
+            if (counter > 4) {
+                value = value + (1 << (31 - i));
+            }
+        }
+        return value;
+    }
+
+    export enum Dht11Result {
+        //% block="Celsius"
+        Celsius,
+        //% block="Fahrenheit"
+        Fahrenheit,
+        //% block="humidity"
+        humidity
+    }
+
+    //% group="thermometer"
+    //% color=#76dbb1
+    //% blockId=get_DHT11_value block="DHT11 set pin %pin_arg|get %dhtResult" blockExternalInputs=true
+    //% pin_arg.fieldEditor="gridpicker" pin_arg.fieldOptions.columns=4
+    //% pin_arg.fieldOptions.tooltips="false" pin_arg.fieldOptions.width="300"
+    export function get_DHT11_value(pin_arg: DigitalPin, dhtResult: Dht11Result): number {
+        switch (dhtResult) {
+            case Dht11Result.Celsius: return (dht11_read(pin_arg) & 0x0000ff00) >> 8;
+            case Dht11Result.Fahrenheit: return ((dht11_read(pin_arg) & 0x0000ff00) >> 8) * 9 / 5 + 32;
+            case Dht11Result.humidity: return dht11_read(pin_arg) >> 24;
+            default: return 0;
+        }
+    }
+
+
+
     //MLX90614_TEMPERATURE
     let MLX90614_I2C_ADDR = 0x5A
 
@@ -432,7 +374,39 @@ namespace Sensor {
             default: return d;
         }
     }
+    export enum PingUnit {
+        //% block="cm"
+        Centimeters,
+        //% block="inches"
+        Inches,
+        //% block="μs"
+        MicroSeconds
+    }
+    //% color=#76dbb1
+    //% group="Read Sensor"
+    //% blockId=sensor_ping block="ultrasonic trig %trig|echo %echo|get distance %unit"
+    //% trig.fieldEditor="gridpicker" trig.fieldOptions.columns=4
+    //% trig.fieldOptions.tooltips="false" trig.fieldOptions.width="300"
+    //% echo.fieldEditor="gridpicker" echo.fieldOptions.columns=4
+    //% echo.fieldOptions.tooltips="false" echo.fieldOptions.width="300"
+    export function sensor_ping(trig: DigitalPin, echo: DigitalPin, unit: PingUnit, maxCmDistance = 500): number {
+        // send pulse
+        pins.setPull(trig, PinPullMode.PullNone);
+        pins.digitalWritePin(trig, 0);
+        control.waitMicros(2);
+        pins.digitalWritePin(trig, 1);
+        control.waitMicros(10);
+        pins.digitalWritePin(trig, 0);
 
+        // read pulse
+        const d = pins.pulseIn(echo, PulseValue.High, maxCmDistance * 58);
+
+        switch (unit) {
+            case PingUnit.Centimeters: return d / 58;
+            case PingUnit.Inches: return d / 148;
+            default: return d;
+        }
+    }
 
     //% color=#383838
     //สำหรับ Track Line
@@ -504,6 +478,123 @@ namespace Sensor {
     }
 }
 
+
+
+//% color=#E7734B icon="\uf48b"
+//% groups="['Motor','Servo','Led', 'Read Sensor','MLX90614 IR thermometer','Logic Sensor','I2C LCD 1602']"
+namespace Motor {
+
+        //สำหรับ motor
+
+    //% color=#E7734B
+    //% direction.defl=MotorShaftDirection.HIGH
+    //% block="Stop Motor $channel"
+    //% group="Motor"
+    export function motorStop(channel: MotorChannel): void {
+        let dirPin = motorChannels[channel];
+        let speedPin = motorSpeedPins[channel];
+
+        pins.digitalWritePin(dirPin, 0);
+        pins.analogWritePin(speedPin, 0);
+    }
+
+    //% color=#E7734B
+    //% block="Motor $channel direction $direction speed $speed"
+    //% speed.min=0 speed.max=255
+    //% direction.min=0 direction.max=1
+    
+    //% group="Motor"
+    //% color=#E7734B
+    export function motorControltest(channel: MotorChannel, direction: number, speed: number): void {
+        let dirPin = motorChannels[channel];
+        let speedPin = motorSpeedPins[channel];
+
+        pins.digitalWritePin(dirPin, direction);
+        pins.analogWritePin(speedPin, pins.map(speed, 0, 255, 0, 1023));
+    }
+
+    //% color=#E7734B
+    //% block="Motor $channel direction $direction speed $speed"
+    //% speed.min=0 speed.max=255
+    //% direction.defl=MotorShaftDirection.HIGH
+    //% group="Motor"
+    //% color=#E7734B
+    export function motorControl(channel: MotorChannel, direction: MotorShaftDirection, speed: number): void {
+        let dirPin = motorChannels[channel];
+        let speedPin = motorSpeedPins[channel];
+
+        pins.digitalWritePin(dirPin, direction);
+        pins.analogWritePin(speedPin, pins.map(speed, 0, 255, 0, 1023));
+    }
+    //% color=#E84E19
+    //สำหรับ servo180
+    //% block"servo180 $pinSmini degrees $degrees"
+    //% degrees.min=20 degrees.max=160
+    //% degrees.defl=90
+    //% group="Servo"
+    export function MiniServo(pinSmini: servoChannel, degrees: number): void {
+        let pinsmini= servoChannels[pinSmini];
+        pins.servoWritePin(pinsmini, degrees);
+
+    }
+    //% color=#E84E19
+    //สำหรับ servocon
+    //% block"ContinuousServo $pinSV direction $direction"
+    //% direction.defl=90
+    //% group="Servo"
+    export function ContinuousServo(pinSV: servoChannel, direction: svconShaft): void {
+        let pinservo = servoChannels[pinSV];
+        pins.servoWritePin(pinservo, direction);
+
+    }
+}
+//% weight=5 color=#E7734B icon="\uf110"
+namespace GigoLED {
+    //% color=#FACB09
+    //สำหรับ Led
+    //% block="LED $leds Status $Status"
+    //% Status.min=0 Status.max=1
+    //% leds.defl=LEDChannel.D
+    //% group="Led"
+    export function ledtest(leds: LEDChannel, Status: number): void {
+        let ledg = LEDChannels[leds];
+
+        pins.digitalWritePin(ledg, Status);
+
+    }
+
+    //% color=#FACB09
+    //สำหรับ Led
+    //% block="LED $leds Status $Status"
+    //% Status.defl=LEDShaftonoff.HIGH*
+    //% leds.defl=LEDChannel.D
+    //% group="Led"
+    export function led(leds: LEDChannel, Status: LEDShaftonoff): void {
+        let ledg = LEDChannels[leds];
+
+        pins.digitalWritePin(ledg, Status);
+
+    }
+    //% color=#FACB09
+    //toggle led
+    //% blockId=LED block="LED %pin $ledstate"
+    //% ledstate.shadow="toggleOnOff"
+    //% expandableArgumentMode="toggle"
+    //% pin.defl=LEDChannel.D
+    //% group="Led"
+    export function ledBrightness(pin: LEDChannel, ledstate: boolean): void {
+        if (ledstate) {
+            let pinled = LEDChannels[pin];
+            pins.digitalWritePin(pinled, 1);
+           
+        }
+        else {
+            let pinled = LEDChannels[pin];
+            pins.digitalWritePin(pinled, 0);
+           
+        }
+    }
+}
 
 //% color=#E7734B icon="\uf26c"
 namespace LCD1602 {
