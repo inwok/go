@@ -268,8 +268,29 @@ enum MLX90614_TEMPERATURE_ORIGIN {
     AMBIENT = 0x06,
 }
 //----------------------------------
-
-
+//% color=#E7734B icon="\uf021" 
+namespace Command {
+    
+    //% block color=#007ACC
+    export function True(): boolean {
+        return true;
+    }
+    
+     //% block color=#007ACC
+    export function False(): boolean {
+        return false;
+    }
+    
+    //% block="reset Microbit" color=#007ACC
+    export function reset(): void {
+        control.reset();
+    }
+    
+    //% block="send $text to computer" color=#007ACC
+    export function sendToComputer(text: string): void {
+    serial.writeLine(text);
+    }
+}    
 //% color=#E7734B icon="\uf2db"
 namespace Sensor {
 
@@ -424,6 +445,7 @@ namespace Sensor {
         let read = blackChannels[pin];
         return pins.digitalReadPin(read) == 0;
     }
+   
 
     //% color=#3D3430    
     //สำหรับ buttonpress
@@ -434,21 +456,7 @@ namespace Sensor {
         let read = buttonChannels[pin];
         return pins.digitalReadPin(read) == 0;
     }
-    //% group="Logic Sensor"
-    //% block color=#007ACC 
-    export function True(): boolean {
-        return true;
-    }
-    //% group="Logic Sensor"
-     //% block color=#007ACC 
-    export function False(): boolean {
-        return false;
-    }
-    //% group="Logic Sensor"
-    //% block="reset Microbit" color=#007ACC 
-    export function reset(): void {
-        control.reset();
-    }
+
 
     //สำหรับ motion PIR3pin
     //% color=#76dbb1
