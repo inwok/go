@@ -1,20 +1,18 @@
 {
     "name": "InwO",
     "version": "1.10.66",
-    "description": "Blocks provided by InwO。",
+    "description": "Blocks provided by InwO",
     "license": "MIT",
-    "dependencies": {
-        "core": "*"
+    "blocks": {
+        "inwo_icon": "Your Icon Block Description"
     },
-    "files": [
-        "README.md",
-        "main.ts",
-	"_locales/zh-cn/sensors-strings.json",
-        "_locales/zh-tw/sensors-strings.json",
-        "_locales/el/sensors-strings.json",
-	"icon.png"
-	
-         
-    ],
-    "public": true
+    "url": "/blocks/inwo",
+    "card": {
+        "inwo_icon": {
+            "name": "Your Icon Block Description",
+            "description": "Description of your Icon block",
+            "image": "/static/inwo/icon.png"
+        }
+    }
+ "public": true
 }
