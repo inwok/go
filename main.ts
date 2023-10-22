@@ -434,6 +434,22 @@ namespace Sensor {
         let read = buttonChannels[pin];
         return pins.digitalReadPin(read) == 0;
     }
+    //% group="Logic Sensor"
+    //% block color=#007ACC 
+    export function True(): boolean {
+        return true;
+    }
+    //% group="Logic Sensor"
+     //% block color=#007ACC 
+    export function False(): boolean {
+        return false;
+    }
+    //% group="Logic Sensor"
+    //% block="reset Microbit" color=#007ACC 
+    export function reset(): void {
+        control.reset();
+    }
+
     //สำหรับ motion PIR3pin
     //% color=#76dbb1
     //% blockId=octopus_pir weight=80 blockGap=30
@@ -775,4 +791,5 @@ namespace LCD1602 {
 
 
 //-----------------------------------
+
 
