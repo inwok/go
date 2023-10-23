@@ -1,7 +1,7 @@
 {
     "name": "InwO",
     "version": "1.10.66",
-    "description": "Blocks provided by InwO。",
+    "description": "Blocks provided by InwO。V.231066",
     "license": "MIT",
     "dependencies": {
         "core": "*"
