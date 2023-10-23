@@ -286,9 +286,10 @@ namespace Command {
         control.reset();
     }
     
-    //% block="send $text to computer" color=#007ACC
-    export function sendToComputer(text: number): void {
-    serial.writeLine(text);
+    //% block="send $datasend to computer" color=#007ACC
+    export function sendToComputer(datasend: number  ): void {
+    let wordsend = ""+ datasend ;
+    serial.writeLine(wordsend);
     }
 }    
 //% color=#E7734B icon="\uf2db"
@@ -808,5 +809,6 @@ namespace LCD1602 {
 
 
 //-----------------------------------
+
 
 
