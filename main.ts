@@ -287,7 +287,7 @@ namespace Command {
     }
     
     //% block="send $text to computer" color=#007ACC
-    export function sendToComputer(text: string): void {
+    export function sendToComputer(text: number): void {
     serial.writeLine(text);
     }
 }    
@@ -305,13 +305,13 @@ namespace Sensor {
     }
     //% color=#000000    
     //สำหรับ sensor
-    //% block="Analog Sensor $pin (0-10) "
+    //% block="Analog Sensor $pin (0-1023) "
     //% group="Read Sensor"
     export function lightSensor(pin: sensorChannel): number {
         let read = servoconChannels[pin];
         let reading = pins.analogReadPin(read);
-        let mappin = pins.map(reading, 0, 1023, 0, 10); // แปลงค่าจาก 0-1023 เป็น 0-10
-        return Math.round(mappin);
+        //let mappin = pins.map(reading, 0, 1023, 0, 10); // แปลงค่าจาก 0-1023 เป็น 0-10
+        return Math.round(reading);
     }
 
     //% color=#000000    
@@ -533,8 +533,8 @@ namespace Motor {
     //% color=#E7734B
     //% block="Motor $channel direction $direction speed $speed"
     //% speed.min=0 speed.max=255
+    //% speed.defl=100
     //% direction.min=0 direction.max=1
-    
     //% group="Motor"
     //% color=#E7734B
     export function motorControltest(channel: MotorChannel, direction: number, speed: number): void {
@@ -548,6 +548,7 @@ namespace Motor {
     //% color=#E7734B
     //% block="Motor $channel direction $direction speed $speed"
     //% speed.min=0 speed.max=255
+    //% speed.defl=100
     //% direction.defl=MotorShaftDirection.HIGH
     //% group="Motor"
     //% color=#E7734B
