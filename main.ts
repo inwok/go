@@ -286,10 +286,27 @@ namespace Command {
         control.reset();
     }
     
-    //% block="send $datasend to computer" color=#007ACC
-    export function sendToComputer(datasend: number  ): void {
-    let wordsend = ""+ datasend ;
-    serial.writeLine(wordsend);
+   
+    export let NEW_LINE = "\r\n";
+    export let NEW_LINE_DELIMITER: Delimiters = Delimiters.NewLine;
+    let writeLinePadding = 32;
+
+  
+    //% weight=90
+    //% help=serial/write-line blockGap=8
+    //% block="send %text to computer" color=#007ACC
+    //% text.shadowOptions.toString=true
+    export function writeLine(text: string): void {
+        if (!text) text = "";
+        serial.writeString(text);
+        // pad data to the 32 byte boundary
+        // to ensure apps receive the packet
+        if (writeLinePadding > 0) {
+            let r = (writeLinePadding - (text.length + NEW_LINE.length) % writeLinePadding) % writeLinePadding;
+            for (let i = 0; i < r; ++i)
+                serial.writeString(" ");
+        }
+        serial.writeString(NEW_LINE);
     }
 }    
 //% color=#E7734B icon="\uf2db"
