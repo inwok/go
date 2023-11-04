@@ -294,7 +294,7 @@ namespace Command {
   
     //% weight=90
     //% help=serial/write-line blockGap=8
-    //% block="send %text to computer" color=#007ACC
+    //% blockId=serial_writeline block="send %text to computer" color=#007ACC
     //% text.shadowOptions.toString=true
     export function writeLine(text: string): void {
         if (!text) text = "";
