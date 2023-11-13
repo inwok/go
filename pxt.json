@@ -4,7 +4,10 @@
     "description": "Blocks provided by InwO",
     "license": "MIT",
     "dependencies": {
-        "core": "*"
+        "core": "*",
+	"radio": "*",
+	"microphone": "*"
+	
     },
     "files": [
         "README.md",
