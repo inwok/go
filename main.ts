@@ -1,5 +1,37 @@
 //Project Microbit Link plus LCD (show pin) แยกกลุ่ม
 //----------------------------------
+// joystick
+enum joymove {
+         //% blockId="Nostate" block="stop"
+        Stop,
+        //% block="Up"
+        Up,
+        //% block="Down"
+        Down,
+        //% block="Left"
+        Left,
+        //% block="Right"
+        Right,
+    }
+   
+enum enButton {
+    //% block="red"
+    P15,
+    //% block="blue"
+    P16,
+    //% block="green"
+    P13,
+    //% block="yellow"
+    P14,
+
+}
+let enButtonChannels: { [key: number]: DigitalPin } = {
+    [enButton.P15]: DigitalPin.P15,
+    [enButton.P16]: DigitalPin.P16,
+    [enButton.P13]: DigitalPin.P13,
+    [enButton.P14]: DigitalPin.P14,
+
+}  
 // บล็อกคำสั่งสำหรับควบคุมมอเตอร์
 enum MotorChannel {
     //% block="E (P15,P16)"
@@ -821,8 +853,64 @@ namespace LCD1602 {
 
 
 }
+//% color=#E7734B icon="\uf11b"
+namespace joystick{
+    //% color=#383838
+    //% block="joystick is pressed"
+    
+    export function joypressed(): boolean {
+        pins.setPull(DigitalPin.P8, PinPullMode.PullUp);
+        let read = DigitalPin.P8;
+        return pins.digitalReadPin(read) == 0;
+    }
+    //% color=#383838
+    //% block="joystick is %pin"
+    export function joystickmove(pin: joymove): boolean {
+        let x = pins.analogReadPin(AnalogPin.P1);
+        let y = pins.analogReadPin(AnalogPin.P2);
+        let now_state = joymove.Stop;
+        if (x < 300) 
+        {
 
+            now_state = joymove.Left;
 
+        }
+        else if (x > 600)
+        {
+
+            now_state = joymove.Right;
+        }
+        else  
+        {
+            if (y < 300)
+            {
+                now_state = joymove.Down;
+            }
+            else if (y > 600) 
+            {
+                now_state = joymove.Up;
+            }
+        }
+        
+        if (now_state == pin)
+            return true;
+        else
+            return false;
+
+    }
+
+    //% color=#383838
+    //% block="Button %pin is pressed"
+    export function joystickbuttonpressed(pin: enButton): boolean {
+        pins.setPull(enButtonChannels[pin], PinPullMode.PullUp);
+        let read = enButtonChannels[pin];
+        return pins.digitalReadPin(read) == 0;
+    }
+
+	
+
+    
+}
 
 
 //-----------------------------------
