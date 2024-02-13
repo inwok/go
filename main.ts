@@ -917,3 +917,134 @@ namespace joystick{
 
 
 
+//% color="#C814B8" weight=20 icon="\uf11b"
+namespace GHBit {
+
+export enum enRocker {
+        //% blockId="Nostate" block="Nostate"
+        Nostate = 0,
+        //% blockId="Up" block="Up"
+        Up,
+        //% blockId="Down" block="Down"
+        Down,
+        //% blockId="Left" block="Left"
+        Left,
+        //% blockId="Right" block="Right"
+        Right,
+        //% blockId="Press" block="Press"
+        Press
+    }
+    
+    export enum enButtonState {
+        //% blockId="Press" block="Press"
+        Press = 0,
+        //% blockId="Realse" block="Realse"
+        Realse = 1
+    }
+    
+    export enum enButton {
+        
+        B1 = 0,
+        B2,
+        B3,
+        B4
+    }
+//% blockId=GHBit_Rocker block="Rocker|value %value"
+    //% weight=96
+    //% blockGap=10
+    //% color="#C814B8"
+    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=6
+    export function Rocker(value: enRocker): boolean {
+
+        pins.setPull(DigitalPin.P8, PinPullMode.PullUp);
+        let x = pins.analogReadPin(AnalogPin.P1);
+        let y = pins.analogReadPin(AnalogPin.P2);
+        let z = pins.digitalReadPin(DigitalPin.P8);
+        let now_state = enRocker.Nostate;
+
+        if (x < 200) // 上
+        {
+
+            now_state = enRocker.Up;
+
+        }
+        else if (x > 730) //下 900 -> 730
+        {
+
+            now_state = enRocker.Down;
+        }
+        else  // 左右
+        {
+            if (y < 200) //右
+            {
+                now_state = enRocker.Right;
+            }
+            else if (y > 730) //左 900 -> 730
+            {
+                now_state = enRocker.Left;
+            }
+        }
+        if (z == 0)
+            now_state = enRocker.Press;
+        if (now_state == value)
+            return true;
+        else
+            return false;
+
+    }
+    
+    //% blockId=GHBit_Button block="Button|num %num|value %value"
+    //% weight=95
+    //% blockGap=10
+    //% color="#C814B8"
+    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=5
+    export function Button(num: enButton, value: enButtonState): boolean {
+         let temp = false;
+         switch (num) {
+            case enButton.B1: {
+              pins.setPull(DigitalPin.P13, PinPullMode.PullUp);
+              if (pins.digitalReadPin(DigitalPin.P13) == value) {
+                temp = true;
+              }
+              else {
+                temp = false;
+              }
+              break;
+            }
+            case enButton.B2: {
+              pins.setPull(DigitalPin.P14, PinPullMode.PullUp);
+              if (pins.digitalReadPin(DigitalPin.P14) == value) {
+                temp = true;
+              }
+              else {
+                temp = false;
+              }
+              break;
+            }
+            case enButton.B3: {
+              pins.setPull(DigitalPin.P15, PinPullMode.PullUp);
+              if (pins.digitalReadPin(DigitalPin.P15) == value) {
+                temp = true;
+              }
+              else {
+                temp = false;
+              }
+              break;
+            }
+            case enButton.B4: {
+              pins.setPull(DigitalPin.P16, PinPullMode.PullUp);
+              if (pins.digitalReadPin(DigitalPin.P16) == value) {
+                temp = true;
+              }
+              else {
+                temp = false;
+              }
+              break;
+            }
+        }
+        return temp;         
+    }
+    
+
+}
+
